@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
-from pokemon.extension import db, bcrypt
+from pokemon.extensions import db, bcrypt
 from pokemon.models import User
 from flask_login import login_user, logout_user, current_user, login_required
 
@@ -79,17 +79,16 @@ def profile():
   if request.method == 'POST':
     firstname = request.form.get('firstname')
     lastname = request.form.get('lastname')
-
-    query = db.select(User).where(User.username==user.username)
-    user = db.session.scalar(query)
-    if firstname and lastname:
+    print(firstname, lastname)
+    if len(firstname)>0 and len(lastname)>0:
       user.firstname = firstname
       user.lastname = lastname
 
-    db.session.add(user)
-    db.session.commit()
-    flash('Profile updated successfully!', 'success')
-
-  return render_template('users/profile.html', 
+      db.session.add(user)
+      db.session.commit()
+      flash('Update profile successful', 'success')
+      return redirect(url_for('users.profile'))
+  
+  return render_template('users/profile.html',
                          title='Profile Page',
-                            user=current_user)
+                         user=user)
